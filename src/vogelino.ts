@@ -95,8 +95,12 @@ const getCrawledProjects = async (page: puppeteer.Page) => {
     }))
   );
 
-  const projectsPromises = projects.map((project) => getCrawledProject(page, project));
-  return await Promise.all(projectsPromises);
+  const enhancedProjects = [];
+  for (const project of projects) {
+    const enhancedProject = await getCrawledProject(page, project);
+    enhancedProjects.push(enhancedProject);
+  }
+  return enhancedProjects;
 }
 
 const crawlWebsite = async () => {

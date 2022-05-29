@@ -14,12 +14,7 @@ interface ParticipantType {
   avatar: string;
 }
 
-interface ParticipantsBlockType {
-  title: string,
-  people: ParticipantType[],
-}
-
-type MetadataType = string | ParticipantsBlockType;
+type MetadataType = string | ParticipantType[];
 
 const getInitialPage = async (pageURL: string): Promise<{
   page: puppeteer.Page,
@@ -63,10 +58,7 @@ const getCrawledMetadata = async (page: puppeteer.Page) => {
 
       return {
         ...acc,
-        [key]: people.length === 0 ? parent.innerText?.replace(groupTitle, '').trim() : {
-          title: groupTitle,
-          people,
-        }
+        [key]: people.length === 0 ? parent.innerText?.replace(groupTitle, '').trim() : people
       };
     }, {} as { [key: string]: MetadataType })
   );
@@ -111,7 +103,7 @@ const crawlWebsite = async () => {
   const projects = await getCrawledProjects(page);
 
   const json = JSON.stringify(projects, null, 2);
-  fs.writeFile("vogelino.json", json, () => {
+  fs.writeFile("exports/vogelino.json", json, () => {
     browser.close();
   });
 };

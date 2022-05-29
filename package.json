@@ -1,14 +1,22 @@
 {
-  "name": "puppeteer-crawler",
+  "name": "puppeteer-crawler-test",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "A repo with puppeteer crawling tests",
+  "main": "src/vogelino.ts",
   "scripts": {
-    "start": "npx ts-node src/vogelino.ts"
+    "start": "npx ts-node src/vogelino.ts",
+    "start-js": "node src/vogelino.js"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "keywords": [
+    "puppeteer",
+    "crawler",
+    "scraper",
+    "web-scraper",
+    "web-crawler",
+    "test-crawler"
+  ],
+  "author": "Lucas Vogel <contact@vogelino.com> (https://vogelino.com)",
+  "license": "MIT",
   "dependencies": {
     "puppeteer": "14.1.1"
   },

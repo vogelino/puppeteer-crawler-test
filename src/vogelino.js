@@ -1,6 +1,7 @@
 const puppeteer = require("puppeteer");
 const fs = require("node:fs");
 
+// Initialises the browser, sets dimensions and waits for the page to load
 const getInitialPage = async (pageURL) => {
   const browser = await puppeteer.launch({ headless: false });
   const page = await browser.newPage();
@@ -10,6 +11,7 @@ const getInitialPage = async (pageURL) => {
   return { page, browser };
 };
 
+// Grabs the main text content from the paragraphs
 const getCrawledContent = async (page) => {
   const contentParagraphsSelector = ".tl-wrapper > div:nth-of-type(3) p";
   return await page.$$eval(contentParagraphsSelector, (paragraphs) =>
@@ -17,6 +19,7 @@ const getCrawledContent = async (page) => {
   );
 };
 
+// Crawls contents from the sidebar
 const getCrawledMetadata = async (page) => {
   const metadataParentsSelector =
     ".tl-wrapper > div:nth-of-type(3) > div > div:nth-of-type(2) > li";
@@ -39,15 +42,13 @@ const getCrawledMetadata = async (page) => {
         [key]:
           people.length === 0
             ? parent.innerText.replace(groupTitle, "").trim()
-            : {
-                title: groupTitle,
-                people,
-              },
+            : people,
       };
     }, {})
   );
 };
 
+// Crawls a single project page to enhance inforamtion gathered on the home page
 const getCrawledProject = async (page, projectBase) => {
   await page.goto(projectBase.url);
   await page.waitForTimeout(2000);
@@ -59,6 +60,8 @@ const getCrawledProject = async (page, projectBase) => {
     metadata,
   };
 };
+
+// Crawls the main page to get the projects and then crawls each project page
 const getCrawledProjects = async (page) => {
   const projectsSelector = ".tl-wrapper > ul > li";
   const projects = await page.$$eval(projectsSelector, (projects) =>
@@ -77,11 +80,12 @@ const getCrawledProjects = async (page) => {
   return enhancedProjects;
 };
 
+// Initial function that starts the crawling of the page
 const crawlWebsite = async () => {
   const { browser, page } = await getInitialPage("https://www.vogelino.com/");
   const projects = await getCrawledProjects(page);
   const json = JSON.stringify(projects, null, 2);
-  fs.writeFile("vogelino.json", json, () => {
+  fs.writeFile("exports/vogelino.json", json, () => {
     browser.close();
   });
 };

@@ -21,13 +21,16 @@ interface ParticipantsBlockType {
 
 type MetadataType = string | ParticipantsBlockType;
 
-const getInitialPage = async (pageURL: string): Promise<puppeteer.Page> => {
+const getInitialPage = async (pageURL: string): Promise<{
+  page: puppeteer.Page,
+  browser: puppeteer.Browser,
+}> => {
   const browser = await puppeteer.launch({ headless: false });
   const page = await browser.newPage();
   await page.setViewport({ width: 1080, height: 800 });
   await page.goto(pageURL);
   await page.waitForTimeout(2000);
-  return page;
+  return { page, browser };
 }
 
 const getCrawledContent = async (page: puppeteer.Page) => {
@@ -85,7 +88,6 @@ const getCrawledProject = async (page: puppeteer.Page, projectBase: ProjectBaseT
 
 const getCrawledProjects = async (page: puppeteer.Page) => {
   const projectsSelector = ".tl-wrapper > ul > li";
-  await page.waitForSelector(projectsSelector);
   const projects = await page.$$eval(projectsSelector, (projects) =>
     projects.map((p): ProjectBaseType => ({
       url: p.querySelector("a")?.href || '',
@@ -104,15 +106,14 @@ const getCrawledProjects = async (page: puppeteer.Page) => {
 }
 
 const crawlWebsite = async () => {
-  const browser = await puppeteer.launch({ headless: true });
-  const page = await getInitialPage("https://www.vogelino.com/");
+  const { browser, page } = await getInitialPage("https://www.vogelino.com/");
 
   const projects = await getCrawledProjects(page);
 
   const json = JSON.stringify(projects, null, 2);
-  fs.writeFileSync("vogelino.json", json);
-
-  await browser.close();
+  fs.writeFile("vogelino.json", json, () => {
+    browser.close();
+  });
 };
 
 crawlWebsite();

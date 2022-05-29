@@ -1,5 +1,5 @@
 # puppeteer-crawler-test
-A repo gathering puppeteer crawling tests for experimentation purpose.
+A repo gathering [puppeteer](https://pptr.dev) crawling tests for experimentation purpose.
 
 ## Get started
 Clone the repository, enter it and install the dependencies
